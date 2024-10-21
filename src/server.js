@@ -19,7 +19,7 @@ export function setupServer() {
         res.status(200).json(
             {
                 status: 200,
-                message: "Successfully found contact with id {contactId}!",
+                message: "Successfully found contacts!",
                 data: contacts
             }
         )
@@ -33,6 +33,14 @@ export function setupServer() {
             res.status(404).json({message: 'contact not found'})
             return
         }
+
+        res.status(200).json(
+            {
+                status: 200,
+                message: `Successfully found contact with id ${contactId}!`,
+                data: contact
+            }
+        )
 
         res.status(200).json({data: contact})
     })
