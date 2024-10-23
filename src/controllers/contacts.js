@@ -1,15 +1,23 @@
 import { createContact, deleteContact, getAllContacts, getContactById, patchContact, putContact } from "../services/contacts.js"
 import createHttpError from 'http-errors';
+import { parsePaginationParams } from "../utils/parsePaginationParams.js";
+import { parseSortParams } from "../utils/parseSortParams.js";
 
 export const getAllContactsController = async (req, res) => {
-    const contacts = await getAllContacts()
-    res.status(200).json(
-        {
-            status: 200,
-            message: "Successfully found contacts!",
-            data: contacts
-        }
-    )
+    const { page, perPage } = parsePaginationParams(req.query);
+    const { sortBy, sortOrder } = parseSortParams(req.query)
+    const contacts = await getAllContacts({
+        page,
+        perPage,
+        sortBy,
+        sortOrder
+    });
+
+    res.json({
+        status: 200,
+        message: 'Successfully found contacts!',
+        data: contacts,
+    });
 }
 
 export const getContactByIdController = async (req, res) => {
@@ -46,7 +54,7 @@ export const putContactController = async (req, res) => {
     const result = await putContact(contactId, req.body, {upsert: true})
 
     if (!result) {
-        next(createHttpError(404, 'Student not found'));
+        next(createHttpError(404, 'Contact not found'));
         return;
       }
     
@@ -54,8 +62,8 @@ export const putContactController = async (req, res) => {
     
       res.status(status).json({
         status,
-        message: `Successfully upserted a student!`,
-        data: result.student,
+        message: `Successfully upserted a contact!`,
+        data: result.contact,
       });
 }
 
